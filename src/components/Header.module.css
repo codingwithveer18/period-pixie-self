@@ -1,0 +1,84 @@
+.main {
+  background-color: #a7a7a7;
+  padding: 0px 20px;
+  margin: 2.5rem 0;
+}
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.center > a {
+  margin: 0 20px;
+  text-decoration: none;
+  color: #ffffff;
+}
+.center > a:hover {
+  color: #a5a5a5;
+}
+img {
+  width: 7%;
+}
+.end > a {
+  text-decoration: none;
+  font-weight: 600;
+  margin: 0 20px;
+  color: #c294ed;
+}
+.end > a:hover {
+  color: #fdfdfd;
+}
+.end > button {
+  color: #9de0ff;
+}
+.end > button:hover {
+  color: #eaf8ff;
+}
+.header {
+  height: 3vh;
+  background: url(https://storage.googleapis.com/project-hackdata/navbar.jpg)
+    no-repeat;
+  background-size: cover;
+  background-position: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header::before {
+  content: "";
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+}
+
+/* .header::after {
+  content: "";
+  top: 0;
+  left: -100%;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: 0.8s;
+}
+
+.header:hover::after {
+  left: 100%;
+} */
