@@ -244,40 +244,40 @@ function Header() {
             </div>
             <div className="mt-6 flow-root">
               <div className="-my-6 divide-y divide-gray-500/10">
-                <div className="grid grid-cols-1 gap-2 py-6 md:grid-cols-2">
+                <div className="grid grid-cols-2 gap-2 py-6 max-sm:grid-cols-1">
                   <a
                     href="/"
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 block rounded-lg px-3 py-1 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Home
                   </a>
                   <a
                     href="/about"
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 block rounded-lg px-3 py-1 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     About
                   </a>
                   <a
                     href="/appointment"
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 block rounded-lg px-3 py-1 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Book Now
                   </a>
                   <a
                     href="/tracker"
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 block rounded-lg px-3 py-1 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Tracker
                   </a>
                   <a
                     href="/contact"
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 block rounded-lg px-3 py-1 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Contact
                   </a>
                   <a
                     href="/blogs"
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 block rounded-lg px-3 py-1 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Blogs
                   </a>
@@ -307,7 +307,7 @@ function Header() {
                           leaveTo="transform opacity-0 scale-95"
                         >
                           <Menu.Items
-                            className="absolute right-0  mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                            className="absolute top-0 right-10  mt-1 w-32 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                             onClick={() => setMobileMenuOpen(false)}
                           >
                             {userNavigation.map((item) => (
@@ -317,7 +317,7 @@ function Header() {
                                     onClick={() => handleItemClick(item.name)}
                                     className={classNames(
                                       active ? "bg-gray-100" : "",
-                                      " w-full text-left px-4 py-2 text-sm text-gray-700"
+                                      " w-full text-left px-4 py-1 text-sm text-gray-700"
                                     )}
                                   >
                                     {item.name}
