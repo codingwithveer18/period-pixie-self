@@ -93,7 +93,7 @@ function Header() {
 
   return (
     <>
-      <header className="bg-gradient-to-r from-red-900/75 to-pink-900 sticky z-50">
+      <header className="bg-gradient-to-r from-red-900/75 to-pink-900 sticky z-100">
         <nav
           className="mx-auto flex max-w-7xl items-center justify-between px-8 lg:px-8"
           aria-label="Global"

@@ -91,7 +91,7 @@ function MapComponent() {
     return (
       <button
         onClick={handleClick}
-        className="absolute z-20 top-4 right-4 px-2 py-1 bg-indigo-600 text-white font-medium rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white sm:font-semibold sm:px-4 sm:py-2"
+        className="absolute z-10 top-4 right-4 px-2 py-1 bg-indigo-600 text-white font-medium rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white sm:font-semibold sm:px-4 sm:py-2"
       >
         Get Current Location
       </button>
