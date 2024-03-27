@@ -15,7 +15,7 @@ function Sidebar() {
   }
   return (
     <>
-      <div className="min-h-full">
+      <div className="min-w-full">
         <Disclosure as="nav" className="bg-slate-100">
           {({ open }) => (
             <>

@@ -22,7 +22,6 @@ import { Bot } from "./components/Dashboard/Bot";
 import { Appointments } from "./components/Dashboard/Appointments";
 import Hospital from "./components/Dashboard/Hospital";
 import { Profile } from "./components/Dashboard/Profile";
-import styles from "./components/Account.module.css";
 import Chatbot from "./components/Dashboard/chatbot";
 import Blogs from "./components/Blogs";
 function App() {

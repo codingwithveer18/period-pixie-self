@@ -118,7 +118,7 @@ function Appointment() {
             </div>
           </div>
         </div>
-        <div className="isolate bg-white px-6 sm:pt-10 lg:px-8 z-0 mb-9 md:mb-3">
+        <div className="isolate bg-white px-6 sm:pt-10 lg:px-8 -z-10 mb-9 md:mb-3">
           <form id="contact-form" className={`mx-auto mt-6 max-w-xl sm:mt-2`}>
             <div className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
               <div>
@@ -243,7 +243,7 @@ function Appointment() {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Listbox.Options className="absolute z-auto mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          <Listbox.Options className="absolute  mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             {people.map((person) => (
                               <Listbox.Option
                                 key={person.id}
