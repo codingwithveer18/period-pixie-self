@@ -3,7 +3,8 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 function Sidebar() {
   const navigation = [
-    { name: "Moody Bot", href: "/moodybot", current: true },
+    { name: "Account", href: "/account", current: true },
+    { name: "Moody Bot", href: "/moodybot", current: false },
     { name: "Nearest Hospital or Pharmacy", href: "/hospital", current: false },
     { name: "Appointments", href: "/appointments", current: false },
     { name: "Profile", href: "/profile", current: false },

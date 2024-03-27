@@ -79,20 +79,20 @@ function Appointment() {
 
   return (
     <>
-      <div className="flex ">
+      <div className="grid grid-flow-row md:grid-flow-col">
         <div className="bg-white py-20 sm:py-22">
           <div className="mx-auto max-w-4xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl sm:text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-center">
                 Special Offer for All
               </h2>
-              <p className="mt-3 text-lg leading-8 text-gray-600">
+              <p className="mt-3 text-lg leading-8 text-gray-600 my-4 sm:my-2">
                 Distinctio et nulla eum soluta et neque labore quibusdam. Saepe
                 et quasi iusto modi velit ut non voluptas in. Explicabo id ut
                 laborum.
               </p>
             </div>
-            <div className="mx-auto mt-3 rounded-3xl ring-1 ring-gray-200 sm:mt-10 lg:mx-0 lg:flex ">
+            <div className="mx-auto mt-5 rounded-3xl ring-1 ring-gray-200 sm:mt-10 lg:mx-0 lg:flex ">
               <div className="-mt-2 p-2 lg:mt-0 lg:w-full lg:flex-shrink-0">
                 <div className="rounded-2xl bg-gray-50 py-10 text-center ring-1 ring-inset ring-gray-900/5 lg:flex lg:flex-col lg:justify-center lg:py-8">
                   <div className="mx-auto max-w-xs px-8">
@@ -118,7 +118,7 @@ function Appointment() {
             </div>
           </div>
         </div>
-        <div className="isolate bg-white px-6 sm:pt-10 lg:px-8 z-0 w-1/2  ">
+        <div className="isolate bg-white px-6 sm:pt-10 lg:px-8 z-0 mb-9 md:mb-3">
           <form id="contact-form" className={`mx-auto mt-6 max-w-xl sm:mt-2`}>
             <div className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
               <div>
@@ -243,7 +243,7 @@ function Appointment() {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          <Listbox.Options className="absolute z-auto mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             {people.map((person) => (
                               <Listbox.Option
                                 key={person.id}

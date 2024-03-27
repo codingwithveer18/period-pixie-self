@@ -93,7 +93,7 @@ function Header() {
 
   return (
     <>
-      <header className="bg-gradient-to-r from-red-900/75 to-pink-900 sticky z-10">
+      <header className="bg-gradient-to-r from-red-900/75 to-pink-900 sticky z-50">
         <nav
           className="mx-auto flex max-w-7xl items-center justify-between px-8 lg:px-8"
           aria-label="Global"
@@ -129,7 +129,7 @@ function Header() {
               href="/appointment"
               className="text-m font-semibold leading-6 text-white"
             >
-              Appointment
+              Book Now
             </a>
             <a
               href="/tracker"
@@ -267,7 +267,7 @@ function Header() {
                     href="/appointment"
                     className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
-                    Appointment
+                    Book Now
                   </a>
                   <a
                     href="/tracker"
