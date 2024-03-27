@@ -89,7 +89,7 @@ function App() {
           <Route path="*" element={<Error />} />
         </Routes>
       </Router>
-      <Chatbot className={styles.right} />
+      <Chatbot />
     </>
   );
 }

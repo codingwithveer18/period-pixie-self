@@ -93,7 +93,7 @@ function Header() {
 
   return (
     <>
-      <header className="bg-gradient-to-r from-red-900/75 to-pink-900 sticky z-100">
+      <header className="bg-gradient-to-r from-red-900/75 to-pink-900 sticky z-auto">
         <nav
           className="mx-auto flex max-w-7xl items-center justify-between px-8 lg:px-8"
           aria-label="Global"
@@ -231,7 +231,7 @@ function Header() {
           onClose={setMobileMenuOpen}
         >
           <div className="fixed inset-0 z-10 transition-all	" />
-          <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 transition-all	 ">
+          <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 transition-all h-full ">
             <div className="flex items-center justify-between transition-all	">
               <img
                 className="h-16 w-auto"
@@ -250,7 +250,7 @@ function Header() {
             </div>
             <div className="mt-6 flow-root">
               <div className="-my-6 divide-y divide-gray-500/10">
-                <div className="space-y-2 py-6">
+                <div className="grid grid-cols-1 gap-2 py-6 md:grid-cols-2">
                   <a
                     href="/"
                     className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
@@ -290,7 +290,7 @@ function Header() {
                 </div>
                 {user ? (
                   <>
-                    <div className="py-6 flex justify-start ">
+                    <div className="py-6 flex justify-end ">
                       {/* Profile dropdown */}
                       <Menu as="div" className="relative ml-3">
                         <div>
@@ -312,7 +312,7 @@ function Header() {
                           leaveFrom="transform opacity-100 scale-100"
                           leaveTo="transform opacity-0 scale-95"
                         >
-                          <Menu.Items className="absolute left-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                             {userNavigation.map((item) => (
                               <Menu.Item key={item.name}>
                                 {({ active }) => (
