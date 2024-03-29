@@ -118,7 +118,7 @@ function Appointment() {
             </div>
           </div>
         </div>
-        <div className="isolate bg-white px-6 sm:pt-10 lg:px-8 -z-10 mb-9 md:mb-3">
+        <div className="isolate bg-white px-6 sm:pt-10 lg:px-8  mb-9 md:mb-3">
           <form id="contact-form" className={`mx-auto mt-6 max-w-xl sm:mt-2`}>
             <div className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
               <div>
