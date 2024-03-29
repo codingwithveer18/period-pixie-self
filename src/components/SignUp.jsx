@@ -3,48 +3,44 @@ import { auth, google } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
-
+import { collection, addDoc } from "firebase/firestore";
+import { firestore } from "../firebase";
 //import "./Login.css";
 
 const Signup = ({ setUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setdisplayName] = useState("");
-  const handleSignup = async (e) => {
-    e.preventDefault();
+  const handleSignup = async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const formObject = {};
+    formData.forEach((value, key) => {
+      formObject[key] = value;
+    });
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password,
-        displayName
+        password
       );
+      await addDoc(collection(firestore, "user"), formObject);
       setUser(userCredential.user);
-      toast.success(`Signed Up successfully ${auth.currentUser.displayName}`);
+      toast.success(`Welcome ${formObject.name}`);
     } catch (error) {
-      console.error(error);
       toast.error("Error !");
     }
   };
-  const handleGoogle = async () => {
-    try {
-      await signInWithPopup(auth, google);
-      toast.success(`Signed Up successfully ${auth.currentUser.displayName}`);
-    } catch (error) {
-      toast.error("Error  !");
-    }
-  };
-  const user = auth.currentUser;
+  // const handleGoogle = async (event) => {
+  //   try {
+  //     await signInWithPopup(auth, google);
 
-  if (user !== null) {
-    user.providerData.forEach((profile) => {
-      console.log("Sign-in provider: " + profile.providerId);
-      console.log("  Provider-specific UID: " + profile.uid);
-      console.log("  Name: " + profile.displayName);
-      console.log("  Email: " + profile.email);
-      console.log("  Photo URL: " + profile.photoURL);
-    });
-  }
+  //     toast.success(`Welcome ${auth.currentUser.displayName}`);
+  //   } catch (error) {
+  //     toast.error("Error!");
+  //   }
+  // };
 
   return (
     <>
@@ -136,12 +132,12 @@ const Signup = ({ setUser }) => {
             </div>
           </form>
           <br />
-          <div className="flex justify-center">
+          {/* <div className="flex justify-center">
             <FcGoogle
               className="text-5xl cursor-pointer  bg-slate-200 hover:bg-slate-300  p-2 rounded-md"
               onClick={handleGoogle}
             />
-          </div>
+          </div> */}
           <p className="mt-10 text-center text-sm text-gray-500">
             Already a member?{" "}
             <a

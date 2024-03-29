@@ -2,6 +2,9 @@ import { getAuth } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider } from "firebase/auth";
 import { getDatabase, ref } from "firebase/database";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCDx8JVrGa-y1bCBeUgiu_Fbx2ZoChGXFk",
   authDomain: "pixie-self.firebaseapp.com",
@@ -14,8 +17,9 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const google = new GoogleAuthProvider(firebaseApp);
-// Get a reference to the Firebase Realtime Database
-const database = getDatabase(); // Don't need to pass firebaseApp here
-const contactformDB = ref(database, "contact"); // Use ref() to get a reference
+const database = getDatabase();
+const contactformDB = ref(database, "contact");
+const firestore = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 
-export { auth, google, contactformDB };
+export { auth, google, contactformDB, firestore, storage };

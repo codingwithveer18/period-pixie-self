@@ -18,9 +18,10 @@ import SignUp from "./components/SignUp";
 import Account from "./components/Account";
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { Bot } from "./components/Dashboard/Bot";
+import { Pblogs } from "./components/Dashboard/Pblogs";
 import { Appointments } from "./components/Dashboard/Appointments";
 import Hospital from "./components/Dashboard/Hospital";
+import AddBlogs from "./components/Dashboard/Addblogs";
 import { Profile } from "./components/Dashboard/Profile";
 import Chatbot from "./components/Dashboard/chatbot";
 import Blogs from "./components/Blogs";
@@ -70,8 +71,12 @@ function App() {
             element={user ? <Account /> : <Navigate to="/login" />}
           />
           <Route
-            path="/moodybot"
-            element={user ? <Bot /> : <Navigate to="*" />}
+            path="/pblogs"
+            element={user ? <Pblogs /> : <Navigate to="*" />}
+          />
+          <Route
+            path="/pblogs/addblogs"
+            element={user ? <AddBlogs /> : <Navigate to="*" />}
           />
           <Route
             path="/appointments"

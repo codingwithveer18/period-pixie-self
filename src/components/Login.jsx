@@ -1,47 +1,66 @@
 import React, { useState } from "react";
-import { auth, google } from "../firebase";
+import { auth, google, firestore } from "../firebase"; // Import firestore from Firebase
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import "./Login.css";
 import { toast } from "react-toastify";
 import { FcGoogle } from "react-icons/fc";
+import { collection, getDocs, query, where } from "firebase/firestore"; // Import the query function
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setdisplayName] = useState("");
-  const user = auth.currentUser;
 
-  if (user !== null) {
-    user.providerData.forEach((profile) => {
-      console.log("Sign-in provider: " + profile.providerId);
-      console.log("  Provider-specific UID: " + profile.uid);
-      console.log("  Name: " + profile.displayName);
-      console.log("  Email: " + profile.email);
-      console.log("  Photo URL: " + profile.photoURL);
-    });
-  }
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
     try {
+      // Sign in with email and password
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password,
-        displayName
+        password
       );
-      toast.success(`Signed In successfully ${auth.currentUser.displayName}`);
-      console.log(userCredential.user);
+
+      // Fetch user data from Firestore based on email
+      const q = query(
+        collection(firestore, "user"),
+        where("email", "==", email)
+      );
+
+      const querySnapshot = await getDocs(q);
+      let displayName = "User"; // Default display name if not found
+      querySnapshot.forEach((doc) => {
+        displayName = doc.data().name; // Retrieve display name from Firestore
+      });
       setUser(userCredential.user);
+      toast.success(`Welcome ${displayName}`);
     } catch (error) {
-      toast.error(`Error! ${error}`);
+      toast.error(`Error! ${error.message}`);
     }
   };
+
   const handleGoogle = async () => {
     try {
-      await signInWithPopup(auth, google);
-      toast.success(`Signed In successfully ${auth.currentUser.displayName}`);
+      // Sign in with Google Popup
+      const result = await signInWithPopup(auth, google);
+
+      // Store user's profile data in Firestore
+      const userData = {
+        email: result.user.email,
+        displayName: result.user.displayName,
+        name: result.user.displayName,
+        photoURL: result.user.photoURL,
+      };
+
+      // Add user data to Firestore collection "user"
+      await addDoc(collection(firestore, "user"), userData);
+
+      // Show success message
+      toast.success(`Welcome ${result.user.displayName}`);
+
+      // Set user state
+      setUser(result.user);
     } catch (error) {
-      toast.error("Error Notification !");
+      toast.error("Error signing in with Google");
     }
   };
 
