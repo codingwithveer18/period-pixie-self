@@ -1,101 +1,100 @@
-import { Disclosure } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { Popover, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowPathIcon,
+  ChartPieIcon,
+  CursorArrowRaysIcon,
+  FingerPrintIcon,
+  SquaresPlusIcon,
+} from "@heroicons/react/24/outline";
 
 function Sidebar() {
-  const navigation = [
-    { name: "Account", href: "/account", current: true },
-    { name: "Personal Blogs ", href: "/pblogs", current: false },
-    { name: "Nearest Hospital or Pharmacy", href: "/hospital", current: false },
-    { name: "Appointments", href: "/appointments", current: false },
-    { name: "Profile", href: "/profile", current: false },
+  const [isOpen, setIsOpen] = useState(false);
+
+  const solutions = [
+    {
+      name: "Account",
+      href: "/account",
+      icon: ChartPieIcon,
+    },
+    {
+      name: "Personal Blogs",
+      href: "/pblogs",
+      icon: CursorArrowRaysIcon,
+    },
+    {
+      name: "Nearest Hospital or Pharmacy",
+      href: "/hospital",
+      icon: FingerPrintIcon,
+    },
+    {
+      name: "Appointments",
+      href: "/appointments",
+      icon: SquaresPlusIcon,
+    },
+    {
+      name: "Profile",
+      href: "/profile",
+      icon: ArrowPathIcon,
+    },
   ];
 
-  function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-  }
   return (
     <>
-      <div className="min-w-full">
-        <Disclosure as="nav" className="bg-slate-100">
-          {({ open }) => (
-            <>
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div className="flex h-16 items-center justify-between">
-                  <div className="flex items-center">
-                    {/* <div className="flex-shrink-0">
-                      <img
-                        className="h-8 w-8"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        alt="Your Company"
+      <Popover className="relative bg-white shadow  w-full py-3 sm:px-6 lg:px-8">
+        <Popover.Button
+          className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 "
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <span className="text-lg mx-5 sm:mx-10">Features</span>
+          <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+        </Popover.Button>
+
+        {isOpen && (
+          <div className="fixed inset-0 z-10 bg-gray-500 bg-opacity-75" />
+        )}
+
+        <Transition
+          show={isOpen}
+          enter="transition ease-out duration-50"
+          enterFrom="opacity-0 translate-y-1"
+          enterTo="opacity-100 translate-y-0"
+          leave="transition ease-in duration-50"
+          leaveFrom="opacity-100 translate-y-0"
+          leaveTo="opacity-0 translate-y-1"
+        >
+          <Popover.Panel className="absolute left-1/2 z-20 flex w-full max-w-max -translate-x-1/2 px-4 mt-4">
+            <div className="w-full max-w-md flex-auto overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
+              <div className="p-4">
+                {solutions.map((item) => (
+                  <div
+                    key={item.name}
+                    className="group relative flex gap-x-3 rounded-lg p-4 hover:bg-gray-50"
+                  >
+                    <div className="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                      <item.icon
+                        className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
+                        aria-hidden="true"
                       />
-                    </div> */}
-                    <div className="hidden sm:block">
-                      <div className="ml-10 flex items-baseline space-x-4">
-                        {navigation.map((item) => (
-                          <a
-                            key={item.name}
-                            href={item.href}
-                            className={classNames(
-                              item.current
-                                ? "bg-gray-900 text-white"
-                                : "text-black hover:bg-gray-700 hover:text-white",
-                              "rounded-md px-3 py-2 text-sm font-medium"
-                            )}
-                            aria-current={item.current ? "page" : undefined}
-                          >
-                            {item.name}
-                          </a>
-                        ))}
-                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center">
+                      <a
+                        href={item.href}
+                        className="font-semibold text-gray-900 text-lg"
+                      >
+                        {item.name}
+                      </a>
                     </div>
                   </div>
-
-                  <div className="-mr-2 flex sm:hidden">
-                    {/* Mobile menu button */}
-                    <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                      <span className="absolute -inset-0.5" />
-                      <span className="sr-only">Open main menu</span>
-                      {open ? (
-                        <XMarkIcon
-                          className="block h-6 w-6"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <Bars3Icon
-                          className="block h-6 w-6"
-                          aria-hidden="true"
-                        />
-                      )}
-                    </Disclosure.Button>
-                  </div>
-                </div>
+                ))}
               </div>
-
-              <Disclosure.Panel className="sm:hidden">
-                <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-                  {navigation.map((item) => (
-                    <Disclosure.Button
-                      key={item.name}
-                      as="a"
-                      href={item.href}
-                      className={classNames(
-                        item.current
-                          ? "bg-gray-900 text-white"
-                          : "text-black hover:bg-gray-700 hover:text-white",
-                        "block rounded-md px-3 py-2 text-base font-medium"
-                      )}
-                      aria-current={item.current ? "page" : undefined}
-                    >
-                      {item.name}
-                    </Disclosure.Button>
-                  ))}
-                </div>
-              </Disclosure.Panel>
-            </>
-          )}
-        </Disclosure>
-      </div>
+            </div>
+          </Popover.Panel>
+        </Transition>
+      </Popover>
     </>
   );
 }
+
 export default Sidebar;

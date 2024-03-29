@@ -18,7 +18,7 @@ import SignUp from "./components/SignUp";
 import Account from "./components/Account";
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { Pblogs } from "./components/Dashboard/Pblogs";
+import Pblogs from "./components/Dashboard/Pblogs";
 import { Appointments } from "./components/Dashboard/Appointments";
 import Hospital from "./components/Dashboard/Hospital";
 import AddBlogs from "./components/Dashboard/Addblogs";
