@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-// import styles from "./Header.module.css";
+// Import useState, useEffect, and other necessary dependencies
+import React, { useState, useEffect } from "react";
+// Import necessary components and functions
 import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Dialog, Popover } from "@headlessui/react";
@@ -7,21 +8,59 @@ import { Bars3Icon, XMarkIcon, BellIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
+import { firestore } from "../firebase";
+import { collection, query, getDocs, where } from "firebase/firestore";
 
+// Define the Header component
 function Header() {
+  // Define state variables
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [profileData, setProfileData] = useState(null);
 
+  // Fetch user profile data from Firestore
   useEffect(() => {
-    // Check if there's a user in local storage
+    const fetchProfileData = async () => {
+      try {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          const userEmail = currentUser.email;
+
+          const q = query(
+            collection(firestore, "user"),
+            where("email", "==", userEmail)
+          );
+          const querySnapshot = await getDocs(q);
+
+          const userData = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            userData.push({
+              id: doc.id,
+              photoURL:
+                data.photoURL ||
+                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", // Fallback to a default profile picture
+            });
+          });
+
+          setProfileData(userData);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
+  // Check if user is logged in and set up authentication listener
+  useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } else {
-      // Set up listener for authentication changes
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         setUser(user);
-        // Store user in local storage for persistence
         if (user) {
           localStorage.setItem("user", JSON.stringify(user));
         } else {
@@ -33,6 +72,7 @@ function Header() {
     }
   }, []);
 
+  // Handle sign out functionality
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
@@ -44,6 +84,8 @@ function Header() {
         console.error(error);
       });
   };
+
+  // Define navigation handlers for various menu items
   const handleSetting = () => {
     navigate("/settings");
   };
@@ -52,12 +94,6 @@ function Header() {
   };
   const handleAccount = () => {
     navigate("/account");
-  };
-  const user2 = {
-    name: "Tom Cook",
-    email: "tom@example.com",
-    imageUrl:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
   };
   const handleItemClick = (itemName) => {
     switch (itemName) {
@@ -69,16 +105,16 @@ function Header() {
         break;
       case "Sign out":
         handleSignOut();
-        // Handle sign out click
         break;
       case "Your Profile":
         handleProfile();
-        // Handle profile click
         break;
       default:
         break;
     }
   };
+
+  // Define user navigation links
   const userNavigation = [
     { name: "Account", href: "/account" },
     { name: "Your Profile", href: "/profile" },
@@ -86,18 +122,24 @@ function Header() {
     { name: "Sign out", href: "/login" },
   ];
 
+  // Utility function to handle CSS classes
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
+
+  // State variable for mobile menu
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Render the header component
   return (
     <>
       <header className="bg-gradient-to-r from-red-900/75 to-pink-900 sticky z-50">
+        {/* Navigation bar */}
         <nav
           className="mx-auto flex max-w-7xl items-center justify-between px-8 lg:px-8"
           aria-label="Global"
         >
+          {/* Logo */}
           <div className="flex lg:flex-1">
             <img
               className="h-20 w-auto"
@@ -105,6 +147,7 @@ function Header() {
               alt="Logo"
             />
           </div>
+          {/* Mobile menu button */}
           <div className="flex lg:hidden ">
             <button
               type="button"
@@ -115,7 +158,9 @@ function Header() {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
+          {/* Desktop menu */}
           <Popover.Group className="hidden lg:flex lg:gap-x-12">
+            {/* Navigation links */}
             <a href="/" className="text-m font-semibold leading-6 text-white">
               Home
             </a>
@@ -150,9 +195,11 @@ function Header() {
               Blogs
             </a>
           </Popover.Group>
+          {/* User actions */}
           {user ? (
             <>
               <div className=" ml-4  hidden md:ml-6 lg:flex lg:flex-1 lg:justify-end ">
+                {/* Notifications */}
                 <button
                   type="button"
                   className="relative rounded-full bg-white p-1 text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -161,7 +208,6 @@ function Header() {
                   <span className="sr-only">View notifications</span>
                   <BellIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
-
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
                   <div>
@@ -170,11 +216,12 @@ function Header() {
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={user2.imageUrl}
+                        src={profileData?.[0]?.photoURL}
                         alt=""
                       />
                     </Menu.Button>
                   </div>
+                  {/* User dropdown menu */}
                   <Transition
                     as={Fragment}
                     enter="transition ease-out duration-100"
@@ -206,6 +253,7 @@ function Header() {
               </div>
             </>
           ) : (
+            // Display login/signup links if user is not logged in
             <>
               <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                 <a
@@ -224,6 +272,7 @@ function Header() {
             </>
           )}
         </nav>
+        {/* Mobile menu */}
         <Dialog
           as="div"
           className="lg:hidden transition-all	"
@@ -245,6 +294,7 @@ function Header() {
             <div className="mt-6 flow-root">
               <div className="-my-6 divide-y divide-gray-500/10">
                 <div className="grid grid-cols-2 gap-2 py-6 max-sm:grid-cols-1">
+                  {/* Mobile navigation links */}
                   <a
                     href="/"
                     className="-mx-3 block rounded-lg px-3 py-1 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
@@ -285,18 +335,19 @@ function Header() {
                 {user ? (
                   <>
                     <div className="py-6 flex justify-end ">
-                      {/* Profile dropdown */}
+                      {/* User dropdown menu */}
                       <Menu as="div" className="relative ml-3 z-auto">
                         <div>
                           <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                             <span className="absolute -inset-1.5" />
                             <img
                               className="h-8 w-8 rounded-full"
-                              src={user2.imageUrl}
+                              src={profileData?.[0]?.photoURL}
                               alt=""
                             />
                           </Menu.Button>
                         </div>
+                        {/* User dropdown menu items */}
                         <Transition
                           as={Fragment}
                           enter="transition ease-out duration-100"
@@ -328,17 +379,12 @@ function Header() {
                           </Menu.Items>
                         </Transition>
                       </Menu>
-                      {/* <button
-                        type="button"
-                        className=" block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50  "
-                      >
-                        <BellIcon className="h-6 w-6" aria-hidden="true" />
-                      </button> */}
                     </div>
                   </>
                 ) : (
                   <>
                     <div className="py-6">
+                      {/* Login and signup links */}
                       <a
                         href="/login"
                         className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"

@@ -51,7 +51,7 @@ function About() {
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               Our Helpful Services
             </h2>
-            <p className="mt-2 text-lg leading-8 text-gray-600">
+            <p className="mt-2 text-lg leading-8 text-gray-600 max-sm:text-justify">
               We are stand out as an integrated platform to provide healthcare
               solutions for deprived and helpless women around the world Our
               platform can be used in several cases and can impact lives of
@@ -70,7 +70,7 @@ function About() {
                     {post.imageUrl}
                     {post.title}
                   </h3>
-                  <p className="mt-3 line-clamp-3 text-sm leading-6 text-gray-600">
+                  <p className="mt-3 line-clamp-3 text-sm leading-6 text-gray-600  max-sm:text-justify">
                     {post.description}
                   </p>
                 </div>

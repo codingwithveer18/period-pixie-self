@@ -92,7 +92,7 @@ function Contact() {
             </div>
           </div>
         </div>
-        <div className="isolate bg-white px-6 sm:pt-10 lg:px-8 z-0   ">
+        <div className="isolate bg-white px-6 sm:py-10 lg:px-8 z-0   ">
           <form
             id="contact-form"
             onSubmit={submitForm}

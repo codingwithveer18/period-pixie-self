@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Error from "./components/Error";
 import Header from "./components/Header";
+import { Footer } from "./components/Footer";
 import Home from "./components/Home";
 import About from "./components/About";
 import Appointment from "./components/Appointment";
@@ -93,6 +94,7 @@ function App() {
           <Route path="*" element={<Error />} />
         </Routes>
       </Router>
+      <Footer />
       <Chatbot />
     </>
   );

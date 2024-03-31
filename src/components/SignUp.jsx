@@ -44,7 +44,7 @@ const Signup = ({ setUser }) => {
 
   return (
     <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-4 py-4 lg:px-6">
+      <div className="flex h-screen flex-1 flex-col justify-center px-4 py-4 lg:px-6">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Create A New Account !
