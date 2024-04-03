@@ -1,44 +1,58 @@
-import { collection, query, where, getDocs } from "firebase/firestore";
 import { useState, useEffect } from "react";
-import { firestore, auth } from "../firebase";
+import { collection, query, getDocs } from "firebase/firestore";
+import { firestore } from "../firebase";
 
 function Blogs() {
   const [userBlogs, setUserBlogs] = useState([]);
-  const [profileData, setProfileData] = useState(null);
+  const [profileData, setProfileData] = useState([]);
 
   useEffect(() => {
-    const fetchUserBlogs = async () => {
+    const fetchData = async () => {
       try {
-        const q = query(collection(firestore, "blogs"));
-        const querySnapshot = await getDocs(q);
-
-        const blogs = querySnapshot.docs.map((doc) => ({
+        // Fetch user blogs
+        const blogsQuery = query(collection(firestore, "blogs"));
+        const blogsSnapshot = await getDocs(blogsQuery);
+        const blogs = blogsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
         setUserBlogs(blogs);
 
-        const u = query(collection(firestore, "user"));
-        const userpro = await getDocs(u);
-
-        const userData = [];
-        userpro.forEach((doc) => {
-          const data = doc.data();
-          userData.push({
-            id: doc.id,
-            photoURL:
-              data.photoURL ||
-              "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", // Fallback to a default profile picture
-          });
-        });
-        setProfileData(userData);
+        // Fetch user profiles
+        const usersQuery = query(collection(firestore, "user"));
+        const usersSnapshot = await getDocs(usersQuery);
+        const users = usersSnapshot.docs.reduce((acc, doc) => {
+          acc[doc.id] = doc.data();
+          return acc;
+        }, {});
+        setProfileData(users);
       } catch (error) {
-        console.error("Error fetching user data", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchUserBlogs();
+    fetchData();
   }, []);
+
+  const renderTags = (tags) => {
+    return tags.map((tag, index) => (
+      <div
+        key={index}
+        className="rounded-full text-xs bg-gray-200 px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100"
+      >
+        {tag}
+      </div>
+    ));
+  };
+
+  const getProfilePhoto = (userId) => {
+    const profile = profileData[userId];
+    return (
+      profile?.photoURL ||
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+    );
+  };
+
   return (
     <div className="bg-white py-12 sm:py-10">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -54,11 +68,11 @@ function Blogs() {
           {userBlogs.map((blog) => (
             <article
               key={blog.id}
-              className="flex max-w-xl flex-col items-start justify-between bg-gradient-to-r from-slate-50 to-slate-100 px-4 pb-4 rounded-lg drop-shadow-md "
+              className="flex max-w-xl flex-col items-start justify-between bg-gradient-to-r from-slate-100 to-slate-200 px-4 pb-4 rounded-lg drop-shadow-lg "
             >
               <div className="relative">
                 {blog.file && (
-                  <div className="h-40 flex justify-center items-center">
+                  <div className="h-40 flex justify-center items-center pt-4">
                     <div className="max-w-full max-h-full overflow-hidden">
                       <img
                         src={blog.file}
@@ -77,9 +91,15 @@ function Blogs() {
               </div>
 
               <div className="flex justify-between w-full">
-                <div className="rounded-full text-xs bg-gray-200 px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100">
-                  {blog.tags}
-                </div>
+                {Array.isArray(blog.tags) &&
+                  blog.tags.map((tag) => (
+                    <div
+                      key={tag}
+                      className="rounded-full text-xs bg-gray-200 px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100"
+                    >
+                      {tag}
+                    </div>
+                  ))}
                 <div className="flex items-center gap-x-4 text-xs">
                   <time dateTime={blog.date} className="text-black">
                     {blog.date}
@@ -92,7 +112,7 @@ function Blogs() {
               <div className=" mt-8 flex items-center gap-x-4">
                 <img
                   className="h-8 w-8 rounded-full"
-                  src={profileData?.[0]?.photoURL}
+                  src={getProfilePhoto(blog.userId)}
                   alt=""
                 />
                 <div className="text-sm leading-6">

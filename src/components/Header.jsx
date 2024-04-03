@@ -55,21 +55,17 @@ function Header() {
 
   // Check if user is logged in and set up authentication listener
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
         setUser(user);
-        if (user) {
-          localStorage.setItem("user", JSON.stringify(user));
-        } else {
-          localStorage.removeItem("user");
-        }
-      });
+        localStorage.setItem("user", JSON.stringify(user));
+      } else {
+        setUser(null);
+        localStorage.removeItem("user");
+      }
+    });
 
-      return () => unsubscribe();
-    }
+    return () => unsubscribe();
   }, []);
 
   // Handle sign out functionality
@@ -216,7 +212,11 @@ function Header() {
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={profileData?.[0]?.photoURL}
+                        src={
+                          profileData && profileData.length > 0
+                            ? profileData[0].photoURL
+                            : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        }
                         alt=""
                       />
                     </Menu.Button>
@@ -342,7 +342,11 @@ function Header() {
                             <span className="absolute -inset-1.5" />
                             <img
                               className="h-8 w-8 rounded-full"
-                              src={profileData?.[0]?.photoURL}
+                              src={
+                                profileData && profileData.length > 0
+                                  ? profileData[0].photoURL
+                                  : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                              }
                               alt=""
                             />
                           </Menu.Button>

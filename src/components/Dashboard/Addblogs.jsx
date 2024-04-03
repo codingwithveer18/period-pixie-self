@@ -15,7 +15,7 @@ export default function Addblogs() {
   const [formObject, setFormObject] = useState({
     title: "",
     description: "",
-    tags: "",
+    tags: [],
     date: "",
   });
   const fileInputRef = useRef(null);
@@ -65,7 +65,14 @@ export default function Addblogs() {
         };
 
         // Add updatedFormObject to Firestore
-        await addDoc(collection(firestore, "blogs"), updatedFormObject);
+        const docRef = await addDoc(
+          collection(firestore, "blogs"),
+          updatedFormObject
+        );
+
+        // Reset file and fileURL states
+        setFile(null);
+        setFileURL("");
       } else {
         // Update formObject with user input and default values
         const updatedFormObject = {
@@ -76,20 +83,23 @@ export default function Addblogs() {
         };
 
         // Add updatedFormObject to Firestore
-        await addDoc(collection(firestore, "blogs"), updatedFormObject);
+        const docRef = await addDoc(
+          collection(firestore, "blogs"),
+          updatedFormObject
+        );
       }
 
       // Reset formObject to initial values or empty strings
       setFormObject({
         title: "",
         description: "",
-        tags: "",
+        tags: [],
         date: "",
       });
 
       toast.success("Data added to Firestore successfully!");
     } catch (error) {
-      toast.error("Error adding data to Firestore:", error);
+      toast.error("Error adding data to Firestore:", error.message);
     }
   };
 
@@ -104,9 +114,12 @@ export default function Addblogs() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+    // Split the input value by commas, trim each tag, and store them as an array
+    const tagsArray = value.split(",").map((tag) => tag.trim());
+    // Update formObject with the array of tags
     setFormObject((prevFormObject) => ({
       ...prevFormObject,
-      [name]: value,
+      [name]: tagsArray,
     }));
   };
 
@@ -362,7 +375,11 @@ export default function Addblogs() {
                       autoComplete="tags"
                       className="block w-full rounded-md border-0 pl-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       onChange={handleInputChange}
-                      value={formObject.tags}
+                      value={
+                        Array.isArray(formObject.tags)
+                          ? formObject.tags.join(", ")
+                          : formObject.tags
+                      } // Check if tags is an array before calling join
                       required
                     />
                   </div>

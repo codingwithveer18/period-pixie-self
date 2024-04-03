@@ -84,7 +84,7 @@ const Pblogs = () => {
               {userBlogs.map((blog) => (
                 <article
                   key={blog.id}
-                  className="flex max-w-xl flex-col items-start justify-between bg-gradient-to-r from-slate-50 to-slate-100 px-4 pb-4 rounded-lg drop-shadow-md "
+                  className="flex max-w-xl flex-col items-start justify-between bg-gradient-to-r from-slate-100 to-slate-200 px-4 pb-4 rounded-lg drop-shadow-md "
                 >
                   <div className="relative">
                     {blog.file && (
