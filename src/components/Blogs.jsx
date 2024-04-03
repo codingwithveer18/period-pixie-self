@@ -58,11 +58,15 @@ function Blogs() {
             >
               <div className="relative">
                 {blog.file && (
-                  <img
-                    src={blog.file}
-                    alt="Cover"
-                    className="h-max w-full object-contain rounded-md"
-                  />
+                  <div className="h-40 flex justify-center items-center">
+                    <div className="max-w-full max-h-full overflow-hidden">
+                      <img
+                        src={blog.file}
+                        alt="Cover"
+                        className="object-contain w-full h-full rounded-md"
+                      />
+                    </div>
+                  </div>
                 )}
                 <div className="pb-2 mb-2">
                   <h3 className="mt-3 text-lg font-semibold leading-6 text-black group-hover:text-gray-600">
@@ -71,6 +75,7 @@ function Blogs() {
                   </h3>
                 </div>
               </div>
+
               <div className="flex justify-between w-full">
                 <div className="rounded-full text-xs bg-gray-200 px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100">
                   {blog.tags}

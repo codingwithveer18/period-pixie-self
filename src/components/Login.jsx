@@ -3,7 +3,7 @@ import { auth, google, firestore } from "../firebase"; // Import firestore from 
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { toast } from "react-toastify";
 import { FcGoogle } from "react-icons/fc";
-import { collection, getDocs, query, where } from "firebase/firestore"; // Import the query function
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState("");
@@ -60,7 +60,8 @@ const Login = ({ setUser }) => {
       // Set user state
       setUser(result.user);
     } catch (error) {
-      toast.error("Error signing in with Google");
+      console.error("Error signing in with Google:", error);
+      toast.error(`Error signing in with Google: ${error.message}`);
     }
   };
 
