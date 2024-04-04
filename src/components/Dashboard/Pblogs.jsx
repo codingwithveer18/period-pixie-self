@@ -13,6 +13,7 @@ import SideBar from "./SideBar";
 import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { MdDeleteOutline } from "react-icons/md";
 
 const Pblogs = () => {
   const navigate = useNavigate();
@@ -134,9 +135,16 @@ const Pblogs = () => {
                     </div>
                   </div>
                   <div className="flex justify-between w-full">
-                    <div className="rounded-full text-xs bg-gray-200 px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100">
-                      {blog.tags}
-                    </div>
+                    {Array.isArray(blog.tags) &&
+                      blog.tags.map((tag) => (
+                        <div
+                          key={tag}
+                          className="rounded-full text-xs bg-gray-200 px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100"
+                        >
+                          {tag}
+                        </div>
+                      ))}
+
                     <div className="flex items-center gap-x-4 text-xs">
                       <time dateTime={blog.date} className="text-black">
                         {blog.date}
@@ -162,20 +170,9 @@ const Pblogs = () => {
                   </div>
                   <button
                     onClick={() => handleDeleteConfirmation(blog.id)}
-                    className="absolute right-0 m-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded inline-flex items-center"
+                    className="absolute bottom-0 right-0 m-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded inline-flex items-center"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 "
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M14.293 5.293a1 1 0 0 1 1.414 1.414L11.414 12l4.293 4.293a1 1 0 1 1-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 1 1-1.414-1.414L8.586 12 4.293 7.707a1 1 0 0 1 1.414-1.414L10 10.586l4.293-4.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <MdDeleteOutline className="text-xl" />
                   </button>
                   <Transition.Root show={open} as={Fragment}>
                     <Dialog
