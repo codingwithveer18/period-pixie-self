@@ -369,6 +369,7 @@ export default function Addblogs() {
                   </label>
                   <div className="mt-2">
                     <input
+                      placeholder="Use , to add multiple tags"
                       type="text"
                       name="tags"
                       id="tags"

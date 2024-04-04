@@ -1,13 +1,26 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { firestore, auth } from "../../firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import SideBar from "./SideBar";
+import { Fragment, useRef } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
 const Pblogs = () => {
   const navigate = useNavigate();
   const [userBlogs, setUserBlogs] = useState([]);
   const [profileData, setProfileData] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [blogToDelete, setBlogToDelete] = useState(null);
+  const cancelButtonRef = useRef(null);
 
   useEffect(() => {
     const fetchUserBlogs = async () => {
@@ -58,6 +71,21 @@ const Pblogs = () => {
     navigate("/pblogs/addblogs");
   };
 
+  const handleDeleteConfirmation = (blogId) => {
+    setOpen(true);
+    setBlogToDelete(blogId);
+  };
+
+  const handleDeleteBlog = async () => {
+    try {
+      await deleteDoc(doc(firestore, "blogs", blogToDelete));
+      setUserBlogs(userBlogs.filter((blog) => blog.id !== blogToDelete));
+      setOpen(false);
+    } catch (error) {
+      console.error("Error deleting blog", error);
+    }
+  };
+
   return (
     <>
       <SideBar />
@@ -88,11 +116,15 @@ const Pblogs = () => {
                 >
                   <div className="relative">
                     {blog.file && (
-                      <img
-                        src={blog.file}
-                        alt="Cover"
-                        className="h-max w-full object-contain rounded-md"
-                      />
+                      <div className="h-40 flex justify-center items-center pt-4">
+                        <div className="max-w-full max-h-full overflow-hidden">
+                          <img
+                            src={blog.file}
+                            alt="Cover"
+                            className="object-contain w-full h-full rounded-md"
+                          />
+                        </div>
+                      </div>
                     )}
                     <div className="pb-2 mb-2">
                       <h3 className="mt-3 text-lg font-semibold leading-6 text-black group-hover:text-gray-600">
@@ -128,6 +160,104 @@ const Pblogs = () => {
                       <p className="text-gray-600">{blog.email}</p>
                     </div>
                   </div>
+                  <button
+                    onClick={() => handleDeleteConfirmation(blog.id)}
+                    className="absolute right-0 m-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded inline-flex items-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 "
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M14.293 5.293a1 1 0 0 1 1.414 1.414L11.414 12l4.293 4.293a1 1 0 1 1-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 1 1-1.414-1.414L8.586 12 4.293 7.707a1 1 0 0 1 1.414-1.414L10 10.586l4.293-4.293z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  <Transition.Root show={open} as={Fragment}>
+                    <Dialog
+                      as="div"
+                      className="fixed inset-0 z-10 overflow-y-auto"
+                      initialFocus={cancelButtonRef}
+                      onClose={setOpen}
+                    >
+                      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <Transition.Child
+                          as={Fragment}
+                          enter="ease-out duration-300"
+                          enterFrom="opacity-0"
+                          enterTo="opacity-100"
+                          leave="ease-in duration-200"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0"
+                        >
+                          <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
+                        </Transition.Child>
+
+                        {/* This element is to trick the browser into centering the modal contents. */}
+                        <span
+                          className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                          aria-hidden="true"
+                        >
+                          &#8203;
+                        </span>
+                        <Transition.Child
+                          as={Fragment}
+                          enter="ease-out duration-300"
+                          enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                          enterTo="opacity-100 translate-y-0 sm:scale-100"
+                          leave="ease-in duration-200"
+                          leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                          leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        >
+                          <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                            <div>
+                              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                <ExclamationCircleIcon
+                                  className="h-6 w-6 text-red-600"
+                                  aria-hidden="true"
+                                />
+                              </div>
+                              <div className="mt-3 text-center sm:mt-5">
+                                <Dialog.Title
+                                  as="h3"
+                                  className="text-lg leading-6 font-medium text-gray-900"
+                                >
+                                  Delete Blog
+                                </Dialog.Title>
+                                <div className="mt-2">
+                                  <p className="text-sm text-gray-500">
+                                    Are you sure you want to delete this blog?
+                                    This action cannot be undone.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="mt-5 sm:mt-6">
+                              <button
+                                type="button"
+                                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm"
+                                onClick={handleDeleteBlog}
+                              >
+                                Delete
+                              </button>
+                              <button
+                                type="button"
+                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                                onClick={() => setOpen(false)}
+                                ref={cancelButtonRef}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        </Transition.Child>
+                      </div>
+                    </Dialog>
+                  </Transition.Root>
                 </article>
               ))}
             </div>
