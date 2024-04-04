@@ -22,6 +22,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import Pblogs from "./components/Dashboard/Pblogs";
 import { Appointments } from "./components/Dashboard/Appointments";
 import Hospital from "./components/Dashboard/Hospital";
+import Settings from "./components/Dashboard/Settings";
 import AddBlogs from "./components/Dashboard/Addblogs";
 import { Profile } from "./components/Dashboard/Profile";
 import Chatbot from "./components/Dashboard/chatbot";
@@ -90,6 +91,10 @@ function App() {
           <Route
             path="/profile"
             element={user ? <Profile /> : <Navigate to="*" />}
+          />
+          <Route
+            path="/settings"
+            element={user ? <Settings /> : <Navigate to="*" />}
           />
           <Route path="*" element={<Error />} />
         </Routes>
