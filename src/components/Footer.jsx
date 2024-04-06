@@ -2,7 +2,7 @@ import { Typography } from "@material-tailwind/react";
 
 export function Footer() {
   return (
-    <footer className="bottom-0 w-full flex h-fit flex-row flex-wrap items-center justify-center gap-y-6 gap-x-12 border-t border-blue-gray-50 px-4 py-6 text-center md:justify-around">
+    <footer className="bottom-0 w-full flex h-max flex-row flex-wrap items-center justify-center gap-y-6 gap-x-12 border-t border-blue-gray-50 px-4 py-6 text-center md:justify-around">
       <Typography color="blue-gray" className="font-normal">
         &copy; 2024 Period Pixie
       </Typography>

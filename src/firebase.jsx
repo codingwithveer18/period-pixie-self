@@ -19,7 +19,8 @@ const auth = getAuth(firebaseApp);
 const google = new GoogleAuthProvider(firebaseApp);
 const database = getDatabase();
 const contactformDB = ref(database, "contact");
+const appointformDB = ref(database, "appointment");
 const firestore = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
 
-export { auth, google, contactformDB, firestore, storage };
+export { auth, google, contactformDB, firestore, storage, appointformDB };

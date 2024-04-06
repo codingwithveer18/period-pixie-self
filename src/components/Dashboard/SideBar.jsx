@@ -42,7 +42,7 @@ function Sidebar() {
 
   return (
     <>
-      <Popover className="relative bg-white shadow  w-full py-3 sm:px-6 lg:px-8">
+      <Popover className="relative bg-white shadow  w-full py-3 sm:px-6 lg:px-8 z-10">
         <Popover.Button
           className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 "
           onClick={() => setIsOpen(!isOpen)}

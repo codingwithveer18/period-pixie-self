@@ -1,45 +1,68 @@
-import { push, set } from "firebase/database";
-import { contactformDB } from "../firebase";
+import { addDoc, collection } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { Fragment, useState } from "react";
+import { useState, useRef } from "react";
+import { firestore } from "../firebase";
+import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { Dialog } from "@headlessui/react";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  "pk_live_51MzagkSIsHtqfHYrNsr95iLMOyleskHAB9l9zZ1Ea6FiotsZcVio15swBaGh5PKcAEAQmeg0bbgo8vscnkNQKGKj00Yu9soLxW"
+);
 
 function Appointment() {
-  const [alertVisible, setAlertVisible] = useState(false);
-  function submitForm(e) {
-    e.preventDefault();
-    // const formData = new FormData(e.target);
-    // const fname = formData.get("first-name");
-    // const lname = formData.get("last-name");
-    // const phonenumber = formData.get("phone-number");
-    // const email = formData.get("email");
-    // const message = formData.get("message");
-    // savemessages(fname, lname, phonenumber, email, message);
-    // try {
-    //   setAlertVisible(toast.success("Sent Successfully"));
-    //   setTimeout(() => {
-    //     setAlertVisible(false);
-    //   }, 3000);
-    //   e.target.reset();
-    // } catch (error) {
-    //   toast.error("Not Sent");
-    // }
-  }
+  const cancelButtonRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false); // New state for payment modal
+  const [formObject, setFormObject] = useState({
+    fname: "",
+    lname: "",
+    email: "",
+    phoneNumber: "",
+    person: "",
+    date: "",
+    time: "",
+  });
 
-  // const savemessages = (fname, lname, phonenumber, email, message) => {
-  //   // Push a new child location with a unique key
-  //   const newContactform = push(contactformDB);
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormObject((prevFormObject) => ({
+      ...prevFormObject,
+      [name]: value,
+    }));
+  };
 
-  //   // Set the data for the new child location
-  //   set(newContactform, {
-  //     fname: fname,
-  //     lname: lname,
-  //     phonenumber: phonenumber,
-  //     email: email,
-  //     message: message,
-  //   });
-  // };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      // Add appointment details to Firestore
+      const appointmentData = { ...formObject, person: selected.name };
+      const docRef = await addDoc(
+        collection(firestore, "appointment"),
+        appointmentData
+      );
+
+      // Reset formObject to empty values
+      setFormObject({
+        fname: "",
+        lname: "",
+        email: "",
+        phoneNumber: "",
+        person: "",
+        date: "",
+        time: "",
+      });
+
+      setSelected(people[0]); // Reset selected person to the first one
+
+      toast.success("Appointment booked successfully!");
+    } catch (error) {
+      toast.error("Error booking appointment:", error.message);
+    }
+  };
   const people = [
     {
       id: 1,
@@ -75,7 +98,37 @@ function Appointment() {
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
+
   const [selected, setSelected] = useState(people[0]);
+
+  const handlePayment = async () => {
+    setPaymentModalOpen(true);
+  };
+
+  const processPayment = async () => {
+    const stripe = await stripePromise;
+
+    // Call your backend to create a Checkout Session
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
+    });
+
+    const session = await response.json();
+
+    // When the customer clicks on the button, redirect them to Checkout
+    const result = await stripe.redirectToCheckout({
+      sessionId: session.id,
+    });
+
+    if (result.error) {
+      // Handle any errors that occur during Checkout
+      console.error(result.error.message);
+    }
+  };
 
   return (
     <>
@@ -119,11 +172,15 @@ function Appointment() {
           </div>
         </div>
         <div className="isolate bg-white px-6 sm:pt-10 lg:px-8  mb-9 md:mb-3">
-          <form id="contact-form" className={`mx-auto mt-6 max-w-xl sm:mt-2`}>
+          <form
+            id="appointment-form"
+            className={`mx-auto mt-6 max-w-xl sm:mt-2`}
+            onSubmit={handleSubmit}
+          >
             <div className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
               <div>
                 <label
-                  htmlFor="first-name"
+                  htmlFor="fname"
                   className="block text-sm font-semibold leading-6 text-gray-900"
                 >
                   First name
@@ -131,17 +188,18 @@ function Appointment() {
                 <div className="mt-2.5">
                   <input
                     type="text"
-                    name="first-name"
-                    id="first-name"
+                    name="fname"
+                    id="fname"
                     autoComplete="given-name"
                     className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     required
+                    onChange={handleChange}
                   />
                 </div>
               </div>
               <div>
                 <label
-                  htmlFor="last-name"
+                  htmlFor="lname"
                   className="block text-sm font-semibold leading-6 text-gray-900"
                 >
                   Last name
@@ -149,11 +207,12 @@ function Appointment() {
                 <div className="mt-2.5">
                   <input
                     type="text"
-                    name="last-name"
-                    id="last-name"
+                    name="lname"
+                    id="lname"
                     autoComplete="family-name"
                     className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     required
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -173,12 +232,13 @@ function Appointment() {
                     autoComplete="email"
                     className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     required
+                    onChange={handleChange}
                   />
                 </div>
               </div>
               <div className="sm:col-span-2">
                 <label
-                  htmlFor="phone-number"
+                  htmlFor="phoneNumber"
                   className="block text-sm font-semibold leading-6 text-gray-900"
                 >
                   Phone number
@@ -201,11 +261,12 @@ function Appointment() {
                   </div>
                   <input
                     type="number"
-                    name="phone-number"
-                    id="phone-number"
+                    name="phoneNumber"
+                    id="phoneNumber"
                     autoComplete="tel"
                     className="block w-full rounded-md border-0 px-3.5 py-2 pl-20 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     required
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -318,6 +379,7 @@ function Appointment() {
                     autoComplete="date"
                     className=" w-full mt-2.5 mr-5 rounded-md border-0 px-3.5 py-2  text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     required
+                    onChange={handleChange}
                   />
                   <input
                     type="time"
@@ -326,20 +388,58 @@ function Appointment() {
                     autoComplete="time"
                     className="  w-full mt-2.5 rounded-md border-0 px-3.5 py-2  text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     required
+                    onChange={handleChange}
                   />
                 </div>
               </div>
             </div>
             <div className="mt-10">
-              <a
-                href="https://buy.stripe.com/test_aEU8Ah9KibGmgGA146"
-                className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                target="_blank"
-              >
-                Book Now
-              </a>
+              <button onClick={handlePayment} className="w-full">
+                Pay Now
+              </button>
             </div>
           </form>
+          {/* Payment Modal */}
+          <Transition.Root show={paymentModalOpen} as={Fragment}>
+            <Dialog
+              as="div"
+              className="fixed inset-0 z-10 overflow-y-auto"
+              onClose={() => setPaymentModalOpen(false)}
+            >
+              <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
+                </Transition.Child>
+                {/* Payment Content */}
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  enterTo="opacity-100 translate-y-0 sm:scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                  leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                >
+                  <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    {/* Add Stripe Checkout or Elements here */}
+                    {/* Example: */}
+                    <button onClick={processPayment}>Process Payment</button>
+                    <button onClick={() => setPaymentModalOpen(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                </Transition.Child>
+              </div>
+            </Dialog>
+          </Transition.Root>
         </div>
       </div>
     </>
