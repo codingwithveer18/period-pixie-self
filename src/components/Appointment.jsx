@@ -36,7 +36,7 @@ function Appointment() {
         appointmentData
       );
 
-      // Reset formObject to empty values
+      // Reset formObject to empty values for each field
       setFormObject({
         fname: "",
         lname: "",
@@ -46,6 +46,7 @@ function Appointment() {
         date: "",
         time: "",
       });
+      event.target.reset();
 
       setSelected(people[0]); // Reset selected person to the first one
 
@@ -355,14 +356,11 @@ function Appointment() {
               </div>
             </div>
             <div className="mt-10">
-              <button type="submit">
-                {/* <a
-                  href="https://buy.stripe.com/test_aEU8Ah9KibGmgGA146"
-                  className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  target="_blank"
-                > */}
+              <button
+                type="submit"
+                className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
                 Book Now
-                {/* </a> */}
               </button>
             </div>
           </form>
