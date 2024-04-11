@@ -9,7 +9,13 @@ import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
 import { firestore } from "../firebase";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
 
 // Define the Header component
 function Header() {
@@ -44,6 +50,22 @@ function Header() {
           });
 
           setProfileData(userData);
+
+          // Add listener for changes to the user's profile document
+          // Inside the useEffect for fetching profile data
+          const unsubscribe = onSnapshot(q, (snapshot) => {
+            const newData = [];
+            snapshot.forEach((doc) => {
+              const data = doc.data();
+              newData.push({
+                id: doc.id,
+                photoURL: data.photoURL,
+              });
+            });
+            setProfileData(newData);
+          });
+
+          return () => unsubscribe();
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -54,11 +76,37 @@ function Header() {
   }, []);
 
   // Check if user is logged in and set up authentication listener
+  // Check if user is logged in and set up authentication listener
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
         localStorage.setItem("user", JSON.stringify(user));
+
+        try {
+          const userEmail = user.email;
+
+          const q = query(
+            collection(firestore, "user"),
+            where("email", "==", userEmail)
+          );
+          const querySnapshot = await getDocs(q);
+
+          const userData = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            userData.push({
+              id: doc.id,
+              photoURL:
+                data.photoURL ||
+                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", // Fallback to a default profile picture
+            });
+          });
+
+          setProfileData(userData);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
       } else {
         setUser(null);
         localStorage.removeItem("user");

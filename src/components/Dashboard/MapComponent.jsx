@@ -52,45 +52,78 @@ function MapComponent() {
     }
   };
 
-  const LocationButton = () => {
-    const handleClick = () => {
-      getUserLocation();
-    };
+  const handleGetCurrentLocation = () => {
+    getUserLocation();
+  };
 
-    const getUserLocation = () => {
-      const map = mapRef.current;
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setMapCenter([latitude, longitude]);
-            setMapZoom(15);
-            {
-              position ? toast.success("Fetched") : toast.error("error");
-            }
+  const getUserLocation = () => {
+    const map = mapRef.current;
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setMapCenter([latitude, longitude]);
+          setMapZoom(15);
+          toast.success("Fetched");
 
-            // Update or create user location marker
-            if (userLocationMarkerRef.current) {
-              userLocationMarkerRef.current.setLatLng([latitude, longitude]);
-            } else {
-              const marker = L.marker([latitude, longitude]).addTo(map);
-              userLocationMarkerRef.current = marker;
-            }
-          },
-          (error) => {
-            //console.error("Error getting user location:", error);
-            toast.error("Error getting user location", error);
+          // Update or create user location marker with a different icon
+          if (userLocationMarkerRef.current) {
+            userLocationMarkerRef.current.setLatLng([latitude, longitude]);
+          } else {
+            const customIcon = L.icon({
+              iconUrl: "src/components/Dashboard/pin.png",
+              iconSize: [32, 32], // Adjust the size as needed
+            });
+            const marker = L.marker([latitude, longitude], {
+              icon: customIcon,
+            }).addTo(map);
+            userLocationMarkerRef.current = marker;
           }
-        );
-      } else {
-        //console.error("Geolocation is not supported by this browser.");
-        toast.error("Geolocation is not supported by this browser.");
-      }
-    };
 
+          // Fetch nearby places after successfully getting user location
+          fetchNearbyPlaces(latitude, longitude);
+        },
+        (error) => {
+          // Handle error when getting user's location fails
+          toast.error("Error getting user location");
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by this browser.");
+    }
+  };
+
+  const fetchNearbyPlaces = async (latitude, longitude) => {
+    try {
+      const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+      const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=4000&type=hospital|pharmacy&key=AIzaSyAZLq-HZutVmtDZ3ihPiQul0umc_x_2PZA`;
+      const response = await fetch(proxyUrl + apiUrl);
+      if (!response.ok) {
+        throw new Error("Failed to fetch nearby places");
+      }
+      const data = await response.json();
+      // Handle the response data and display markers for each nearby place
+      // Example:
+      if (data.results && data.results.length > 0) {
+        data.results.forEach((place) => {
+          const marker = L.marker([
+            place.geometry.location.lat,
+            place.geometry.location.lng,
+          ]).addTo(mapRef.current);
+          marker.bindPopup(
+            `<strong>${place.name}</strong><br>${place.vicinity}`
+          );
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching nearby places:", error);
+    }
+  };
+
+  const LocationButton = () => {
     return (
       <button
-        onClick={handleClick}
+        onClick={handleGetCurrentLocation}
         className="absolute z-10 top-4 right-4 px-2 py-1 bg-indigo-600 text-white font-medium rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white sm:font-semibold sm:px-4 sm:py-2"
       >
         Get Current Location
