@@ -1,6 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { push, set } from "firebase/database";
-import { contactformDB } from "../firebase";
+import {
+  collection,
+  addDoc,
+  orderBy,
+  query,
+  onSnapshot,
+} from "firebase/firestore";
+import { contactformDB, firestore, auth } from "../firebase"; // Assuming you have access to the auth object from firebase
 import { toast } from "react-toastify";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { IoCallOutline } from "react-icons/io5";
@@ -8,6 +15,20 @@ import { CiMail } from "react-icons/ci";
 
 function Contact() {
   const [alertVisible, setAlertVisible] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    // Check if user is logged in
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in
+        const { email } = user;
+        setUserEmail(email);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   function submitForm(e) {
     e.preventDefault();
@@ -15,9 +36,15 @@ function Contact() {
     const fname = formData.get("first-name");
     const lname = formData.get("last-name");
     const phonenumber = formData.get("phone-number");
-    const email = formData.get("email");
+    const email = userEmail || formData.get("email"); // Use userEmail if available, otherwise use the manually input email
     const message = formData.get("message");
+
+    // Save form data
     savemessages(fname, lname, phonenumber, email, message);
+
+    // Send email
+    sendEmail(email, "Received", `Here's the response: ${message}`);
+
     try {
       setAlertVisible(toast.success("Sent Successfully"));
       setTimeout(() => {
@@ -42,6 +69,41 @@ function Contact() {
       message: message,
     });
   };
+
+  const sendEmail = async (email, subject, text) => {
+    try {
+      await addDoc(collection(firestore, "mail"), {
+        to: [email],
+        message: {
+          subject,
+          text,
+        },
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+  };
+
+  /** Create a Firebase query */
+  // const collectionRef = collection(firestore, "mail");
+  // const q = query(collectionRef, orderBy("delivery.startTime"));
+
+  // /** Listen for any changes **/
+  // onSnapshot(q, (snapshot) => {
+  //   snapshot.docs.forEach((change) => {
+  //     /** Get email metadata */
+  //     const { to, message, delivery } = change.data();
+
+  //     // /** Update the UI to */
+  //     // console.log(to);
+
+  //     // /** Update the UI message */
+  //     // console.log(message);
+
+  //     // /** Update the UI delivery */
+  //     // console.log(delivery);
+  //   });
+  // });
   return (
     <>
       <div className="grid grid-flow-row md:grid-flow-col">
@@ -150,7 +212,8 @@ function Contact() {
                     id="email"
                     autoComplete="email"
                     className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    required
+                    value={userEmail} // Set the value to the userEmail state
+                    onChange={(e) => setUserEmail(e.target.value)} // Update userEmail state on change
                   />
                 </div>
               </div>

@@ -22,5 +22,6 @@ const contactformDB = ref(database, "contact");
 const appointformDB = ref(database, "appointment");
 const firestore = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
+// Initialize Firebase Cloud Messaging and get a reference to the service
 
 export { auth, google, contactformDB, firestore, storage, appointformDB };

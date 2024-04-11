@@ -11,6 +11,14 @@ function MapComponent() {
   const userLocationMarkerRef = useRef(null);
   const mapRef = useRef();
 
+  const clearMarkers = () => {
+    mapRef.current.eachLayer((layer) => {
+      if (layer instanceof L.Marker) {
+        mapRef.current.removeLayer(layer);
+      }
+    });
+  };
+
   const handleSearch = async () => {
     try {
       const response = await fetch(
@@ -19,11 +27,7 @@ function MapComponent() {
       if (!response.ok) {
         throw new Error("Geocoding request failed");
       }
-      {
-        response.ok
-          ? toast.info("Fetching")
-          : toast.error("Geocoding request failed");
-      }
+
       const data = await response.json();
       if (data.length > 0) {
         const latitude = parseFloat(data[0].lat);
@@ -38,17 +42,17 @@ function MapComponent() {
         toast.success("Fetched");
 
         // Remove user location marker when searching new location
-        if (userLocationMarkerRef.current) {
-          mapRef.current.removeLayer(userLocationMarkerRef.current);
-          userLocationMarkerRef.current = null;
-        }
+        clearMarkers();
+
+        // Fetch nearby places after successfully getting search location
+        fetchNearbyPlaces(latitude, longitude);
       } else {
         setSearchResult(null);
-        //console.log("No results found");
         toast.error("No results found");
       }
     } catch (error) {
       console.error("Error geocoding:", error);
+      toast.error("Error geocoding");
     }
   };
 
@@ -67,18 +71,15 @@ function MapComponent() {
           toast.success("Fetched");
 
           // Update or create user location marker with a different icon
-          if (userLocationMarkerRef.current) {
-            userLocationMarkerRef.current.setLatLng([latitude, longitude]);
-          } else {
-            const customIcon = L.icon({
-              iconUrl: "src/components/Dashboard/pin.png",
-              iconSize: [32, 32], // Adjust the size as needed
-            });
-            const marker = L.marker([latitude, longitude], {
-              icon: customIcon,
-            }).addTo(map);
-            userLocationMarkerRef.current = marker;
-          }
+          clearMarkers();
+          const customIcon = L.icon({
+            iconUrl: "src/components/Dashboard/pin.png",
+            iconSize: [32, 32], // Adjust the size as needed
+          });
+          const marker = L.marker([latitude, longitude], {
+            icon: customIcon,
+          }).addTo(map);
+          userLocationMarkerRef.current = marker;
 
           // Fetch nearby places after successfully getting user location
           fetchNearbyPlaces(latitude, longitude);
@@ -103,7 +104,6 @@ function MapComponent() {
       }
       const data = await response.json();
       // Handle the response data and display markers for each nearby place
-      // Example:
       if (data.results && data.results.length > 0) {
         data.results.forEach((place) => {
           const marker = L.marker([
@@ -117,6 +117,7 @@ function MapComponent() {
       }
     } catch (error) {
       console.error("Error fetching nearby places:", error);
+      toast.error("Error fetching nearby places");
     }
   };
 

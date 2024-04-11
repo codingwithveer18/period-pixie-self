@@ -16,9 +16,9 @@ function Tracker() {
 
     const { cycleLength, flowDuration, lastPeriodStart } = formData;
     const cycleDates = calculateMenstrualCycleDates(
-      cycleLength,
-      flowDuration,
-      lastPeriodStart
+      parseInt(cycleLength),
+      parseInt(flowDuration),
+      new Date(lastPeriodStart)
     );
     setCalendarData(cycleDates);
   };
@@ -30,19 +30,18 @@ function Tracker() {
   ) => {
     const cycleDates = [];
     let currentDate = new Date(lastPeriodStart);
-    const monthCount = 3;
 
-    for (let i = 0; i < monthCount; i++) {
+    for (let i = 0; i < 3; i++) {
+      const cycleStartDate = new Date(currentDate);
       const cycleEndDate = new Date(currentDate);
-      cycleEndDate.setDate(currentDate.getDate() + parseInt(flowDuration));
+      cycleEndDate.setDate(cycleEndDate.getDate() + flowDuration - 1);
 
-      while (currentDate <= cycleEndDate) {
-        cycleDates.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + parseInt(cycleLength) - 1);
-      }
+      cycleDates.push({
+        start: cycleStartDate,
+        end: cycleEndDate,
+      });
 
-      currentDate.setMonth(currentDate.getMonth() + 1);
-      currentDate.setDate(1);
+      currentDate.setDate(currentDate.getDate() + cycleLength);
     }
 
     return cycleDates;
@@ -150,11 +149,11 @@ function Tracker() {
             <div className="calendar-block">
               <Calendar
                 className="w-full"
-                showNeighboringMonth={false} // Only show current month
-                showFixedNumberOfWeeks={true} // Show same number of weeks for each month
+                showNeighboringMonth={false}
+                showFixedNumberOfWeeks={true}
                 tileClassName={({ date }) =>
-                  calendarData.find(
-                    (d) => d.toDateString() === date.toDateString()
+                  calendarData.some(
+                    (cycle) => date >= cycle.start && date <= cycle.end
                   )
                     ? "menstruation-day"
                     : null
@@ -162,25 +161,35 @@ function Tracker() {
                 tileContent={({ date }) => {
                   if (
                     calendarData.some(
-                      (d) => d.toDateString() === date.toDateString()
+                      (cycle) => date >= cycle.start && date <= cycle.end
                     )
                   ) {
                     return <div className="menstruation-dot">🔴</div>;
                   }
                 }}
-                calendarType="gregory" // Display calendar in US format
-                minDetail="month" // Show month view by default
-                maxDetail="month" // Maximum detail level
-                defaultActiveStartDate={new Date()} // Set current month as default
-                minDate={new Date()} // Allow only current date and future dates
+                minDetail="month"
+                maxDetail="month"
+                minDate={new Date()}
                 maxDate={
                   new Date(
                     new Date().getFullYear(),
                     new Date().getMonth() + 2,
                     1
                   )
-                } // Allow current month and next two months
-                showNavigation={false} // Hide navigation buttons
+                }
+                defaultActiveStartDate={
+                  formData.lastPeriodStart instanceof Date &&
+                  !isNaN(formData.lastPeriodStart)
+                    ? formData.lastPeriodStart
+                    : new Date()
+                }
+                onChange={(date) =>
+                  setFormData((prevState) => ({
+                    ...prevState,
+                    lastPeriodStart: date,
+                  }))
+                }
+                showNavigation={true}
               />
             </div>
           </div>
