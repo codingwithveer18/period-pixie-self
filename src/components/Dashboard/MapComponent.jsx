@@ -10,7 +10,7 @@ function MapComponent() {
   const [mapZoom, setMapZoom] = useState(10);
   const userLocationMarkerRef = useRef(null);
   const mapRef = useRef();
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API;
   const clearMarkers = () => {
     mapRef.current.eachLayer((layer) => {
       if (layer instanceof L.Marker) {
