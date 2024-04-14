@@ -73,7 +73,7 @@ function MapComponent() {
           // Update or create user location marker with a different icon
           clearMarkers();
           const customIcon = L.icon({
-            iconUrl: "period-pixie-self/src/components/Dashboard/pin.png",
+            iconUrl: "../../../src/components/Dashboard/pin.png",
             iconSize: [32, 32], // Adjust the size as needed
           });
           const marker = L.marker([latitude, longitude], {
