@@ -10,7 +10,7 @@ function MapComponent() {
   const [mapZoom, setMapZoom] = useState(10);
   const userLocationMarkerRef = useRef(null);
   const mapRef = useRef();
-
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const clearMarkers = () => {
     mapRef.current.eachLayer((layer) => {
       if (layer instanceof L.Marker) {
@@ -97,8 +97,8 @@ function MapComponent() {
   const fetchNearbyPlaces = async (latitude, longitude) => {
     try {
       const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-      const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=4000&type=hospital|pharmacy&key=AIzaSyAZLq-HZutVmtDZ3ihPiQul0umc_x_2PZA`;
-      const response = await fetch(proxyUrl + apiUrl);
+      const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=4000&type=hospital|pharmacy&key=${apiKey}`;
+      const response = await fetch(proxyUrl + apiUrl); // Corrected
       if (!response.ok) {
         throw new Error("Failed to fetch nearby places");
       }
