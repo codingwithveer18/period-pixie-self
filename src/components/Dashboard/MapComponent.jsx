@@ -120,7 +120,6 @@ data.results.forEach((place) => {
 
   marker.bindPopup(`<strong>${place.name}</strong><br>${place.vicinity}`);
 });
-        });
       }
     } catch (error) {
       console.error("Error fetching nearby places:", error);
@@ -143,6 +142,7 @@ data.results.forEach((place) => {
     <>
       <div className="w-auto">
         <div className="flex flex-col items-center justify-center relative">
+          <p>To Enable Nearby Hospitals Functionality , Request access from "https://cors-anywhere.herokuapp.com/corsdemo" </p>
           <MapContainer
             ref={mapRef}
             center={mapCenter}
