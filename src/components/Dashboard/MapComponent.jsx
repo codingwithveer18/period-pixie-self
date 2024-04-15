@@ -96,7 +96,7 @@ function MapComponent() {
 
   const fetchNearbyPlaces = async (latitude, longitude) => {
     try {
-      const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+      const proxyUrl = "https://cors-anywhere.herokuapp.com";
       const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=4000&type=hospital|pharmacy&key=${apiKey}`;
       const response = await fetch(proxyUrl + apiUrl);
       if (!response.ok) {
@@ -119,7 +119,6 @@ data.results.forEach((place) => {
   }).addTo(mapRef.current);
 
   marker.bindPopup(`<strong>${place.name}</strong><br>${place.vicinity}`);
-});
       }
     } catch (error) {
       console.error("Error fetching nearby places:", error);
