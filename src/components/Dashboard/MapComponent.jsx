@@ -73,8 +73,8 @@ function MapComponent() {
           // Update or create user location marker with a different icon
           clearMarkers();
           const customIcon = L.icon({
-            iconUrl: "src/components/Dashboard/pin.png",
-            iconSize: [32, 32], // Adjust the size as needed
+            iconUrl: "https://storage.googleapis.com/project-hackdata/pin.png",
+            iconSize: [48, 48], // Adjust the size as needed
           });
           const marker = L.marker([latitude, longitude], {
             icon: customIcon,
@@ -98,7 +98,7 @@ function MapComponent() {
     try {
       const proxyUrl = "https://cors-anywhere.herokuapp.com/";
       const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=4000&type=hospital|pharmacy&key=${apiKey}`;
-      const response = await fetch(proxyUrl + apiUrl); // Corrected
+      const response = await fetch(proxyUrl + apiUrl);
       if (!response.ok) {
         throw new Error("Failed to fetch nearby places");
       }
@@ -106,10 +106,16 @@ function MapComponent() {
       // Handle the response data and display markers for each nearby place
       if (data.results && data.results.length > 0) {
         data.results.forEach((place) => {
-          const marker = L.marker([
-            place.geometry.location.lat,
-            place.geometry.location.lng,
-          ]).addTo(mapRef.current);
+          const customIcon = L.icon({
+            iconUrl: "https://storage.googleapis.com/project-hackdata/flag.png",
+            iconSize: [20, 20], // Adjust the size as needed
+          });
+          const marker = L.marker(
+            [place.geometry.location.lat, place.geometry.location.lng],
+            {
+              icon: customIcon,
+            }
+          ).addTo(mapRef.current);
           marker.bindPopup(
             `<strong>${place.name}</strong><br>${place.vicinity}`
           );
@@ -135,6 +141,19 @@ function MapComponent() {
   return (
     <>
       <div className="w-auto">
+        <div>
+          <p className="italic bg-slate-100 my-2 p-2 text-center">
+            To Enable Nearby Hospitals Functionality , Request access from
+            <a
+              href="https://cors-anywhere.herokuapp.com/corsdemo"
+              className="font-bold text-purple-700"
+              target="_blank"
+            >
+              {" "}
+              Here
+            </a>
+          </p>
+        </div>
         <div className="flex flex-col items-center justify-center relative">
           <MapContainer
             ref={mapRef}
