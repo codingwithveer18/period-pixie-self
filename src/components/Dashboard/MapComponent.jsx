@@ -73,7 +73,7 @@ function MapComponent() {
           // Update or create user location marker with a different icon
           clearMarkers();
           const customIcon = L.icon({
-            iconUrl: "/pin.png",
+            iconUrl: "src/components/Dashboard/pin.png",
             iconSize: [32, 32], // Adjust the size as needed
           });
           const marker = L.marker([latitude, longitude], {
@@ -98,7 +98,7 @@ function MapComponent() {
     try {
       const proxyUrl = "https://cors-anywhere.herokuapp.com/";
       const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=4000&type=hospital|pharmacy&key=${apiKey}`;
-      const response = await fetch(proxyUrl + apiUrl); // Corrected
+      const response = await fetch(proxyUrl + apiUrl);
       if (!response.ok) {
         throw new Error("Failed to fetch nearby places");
       }
