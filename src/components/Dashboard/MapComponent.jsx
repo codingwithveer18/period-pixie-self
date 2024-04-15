@@ -105,14 +105,21 @@ function MapComponent() {
       const data = await response.json();
       // Handle the response data and display markers for each nearby place
       if (data.results && data.results.length > 0) {
-        data.results.forEach((place) => {
-          const marker = L.marker([
-            place.geometry.location.lat,
-            place.geometry.location.lng,
-          ]).addTo(mapRef.current);
-          marker.bindPopup(
-            `<strong>${place.name}</strong><br>${place.vicinity}`
-          );
+data.results.forEach((place) => {
+  const customIcon = L.icon({
+    iconUrl: "https://storage.googleapis.com/project-hackdata/allmarkers.png",
+    iconSize: [32, 32], // Adjust the size as needed
+  });
+
+  const marker = L.marker([
+    place.geometry.location.lat,
+    place.geometry.location.lng,
+  ], {
+    icon: customIcon,
+  }).addTo(mapRef.current);
+
+  marker.bindPopup(`<strong>${place.name}</strong><br>${place.vicinity}`);
+});
         });
       }
     } catch (error) {
