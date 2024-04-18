@@ -107,9 +107,9 @@ function Contact() {
   return (
     <>
       <div className="grid grid-flow-row md:grid-flow-col">
-        <div className="  bg-white px-4  sm:pt-10 lg:px-8 -z-10">
+        <div className="  bg-white px-4  sm:pt-10 lg:px-8 ">
           <div
-            className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
+            className="absolute inset-x-0 top-[-10rem]  transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
             aria-hidden="true"
           >
             <div
@@ -269,10 +269,10 @@ function Contact() {
                 </div>
               </div>
             </div>
-            <div className="mt-10">
+            <div className="mt-5">
               <button
                 type="submit"
-                className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mb-6"
                 onSubmit={() => submitForm}
               >
                 Send

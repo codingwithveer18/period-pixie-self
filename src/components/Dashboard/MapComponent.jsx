@@ -43,7 +43,14 @@ function MapComponent() {
 
         // Remove user location marker when searching new location
         clearMarkers();
-
+        const myCustomIcon = L.icon({
+          iconUrl: "https://storage.googleapis.com/project-hackdata/pin.png",
+          iconSize: [48, 48], // Adjust the size as needed
+        });
+        const customMarker = L.marker([latitude, longitude], {
+          icon: myCustomIcon, // Your custom icon object
+        }).addTo(mapRef.current); // Change 'data' to 'mapRef.current'
+        userLocationMarkerRef.current = customMarker;
         // Fetch nearby places after successfully getting search location
         fetchNearbyPlaces(latitude, longitude);
       } else {

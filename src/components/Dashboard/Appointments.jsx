@@ -1,61 +1,102 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { auth, firestore } from "../../firebase";
 import SideBar from "./SideBar";
-import { IoReturnUpBack } from "react-icons/io5";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { MdOutlineFileDownload } from "react-icons/md";
+import html2pdf from "html2pdf.js";
+
 export const Appointments = () => {
-  const people = [
-    {
-      name: "Leslie Alexander",
-      email: "leslie.alexander@example.com",
-      role: "Co-Founder / CEO",
-      imageUrl:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      lastSeen: "3h ago",
-      lastSeenDateTime: "2023-01-23T13:23Z",
-    },
-    {
-      name: "Michael Foster",
-      email: "michael.foster@example.com",
-      role: "Co-Founder / CTO",
-      imageUrl:
-        "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      lastSeen: "3h ago",
-      lastSeenDateTime: "2023-01-23T13:23Z",
-    },
-    {
-      name: "Dries Vincent",
-      email: "dries.vincent@example.com",
-      role: "Business Relations",
-      imageUrl:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      lastSeen: null,
-    },
-    {
-      name: "Lindsay Walton",
-      email: "lindsay.walton@example.com",
-      role: "Front-end Developer",
-      imageUrl:
-        "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      lastSeen: "3h ago",
-      lastSeenDateTime: "2023-01-23T13:23Z",
-    },
-    {
-      name: "Courtney Henry",
-      email: "courtney.henry@example.com",
-      role: "Designer",
-      imageUrl:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      lastSeen: "3h ago",
-      lastSeenDateTime: "2023-01-23T13:23Z",
-    },
-    {
-      name: "Tom Cook",
-      email: "tom.cook@example.com",
-      role: "Director of Product",
-      imageUrl:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      lastSeen: null,
-    },
-  ];
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [appointments, setAppointments] = useState([]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          setUserEmail(user.email);
+          const u = query(
+            collection(firestore, "user"),
+            where("email", "==", user.email)
+          );
+          const userDocs = await getDocs(u);
+          let userName = "User";
+          userDocs.forEach((doc) => {
+            userName = doc.data().name;
+          });
+          setUserName(userName);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const appointmentsQuery = query(
+          collection(firestore, "appointment"),
+          where("email", "==", userEmail)
+        );
+        const appointmentsSnapshot = await getDocs(appointmentsQuery);
+        const fetchedAppointments = appointmentsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          date: doc.data().date,
+          email: doc.data().email,
+          fname: doc.data().fname,
+          lname: doc.data().lname,
+          person: doc.data().person,
+          phoneNumber: doc.data().phoneNumber,
+          time: doc.data().time,
+        }));
+        setAppointments(fetchedAppointments);
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    fetchAppointments();
+  }, [userEmail]);
+
+  const handleDownloadPDF = (appointment) => {
+    const appointmentElement = document.getElementById(
+      `appointment-${appointment.id}`
+    );
+
+    // Customize the appointment layout
+    const appointmentHTML = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 2px solid #0a79df; border-radius: 8px; max-width: 400px; margin: 0 auto; margin-top:20px;">
+    <div style="background-color: #0a79df; color: #fff; text-align: center; padding: 10px 0; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+      <h1 style="margin: 0;">PIXIE CARE</h1>
+    </div>
+    <div style="text-align: center; margin-bottom: 20px;">
+      <p>Appointment Details</p>
+    </div>
+    <div style="background-color: #f5f5f5; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+      <p><strong>Date:</strong> ${appointment.date}</p>
+      <p><strong>Time:</strong> ${appointment.time}</p>
+      <p><strong>Doctor:</strong> ${appointment.person}</p>
+      <p><strong>Name:</strong> ${appointment.fname} ${appointment.lname}</p>
+      <p><strong>Email:</strong> ${appointment.email}</p>
+      <p><strong>Phone Number:</strong> ${appointment.phoneNumber}</p>
+    </div>
+    <div style="text-align: center; margin-top: 20px; color: #666;">
+      <p>Powered by Period Pixie</p>
+    </div>
+  </div>
+  
+    `;
+
+    // Convert HTML to PDF
+    html2pdf()
+      .from(appointmentHTML)
+      .save(`${appointment.fname}_${appointment.lname}_appointment.pdf`);
+  };
+
   return (
     <>
       <SideBar />
@@ -64,59 +105,57 @@ export const Appointments = () => {
           <div className="flex flex-col justify-between sm:flex-row ">
             <div className=" max-w-2xl lg:mx-0">
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Your Appointments
+                Your Appointments,{" "}
+                <span className="font-bold text-purple-700">{userName}</span>
               </h2>
-              <p className="mt-2 text-lg leading-8 text-gray-600">
-                Learn how to grow your business with your expert advice.
+              <p className="mt-4 mb-2 text-lg leading-8 text-gray-600">
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse,
+                natus!
               </p>
             </div>
-            {/* <button className="rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-5 p-3">
-              ADD BLOG
-            </button> */}
           </div>
-          <div className="mx-auto gap-x-8 gap-y-16 border-t border-gray-200 pt-10 sm:mt-8 sm:pt-8 lg:mx-0 lg:max-w-none lg:grid-cols-3 sm:grid-cols-2 sm:justify-center">
-            <ul role="list" className="divide-y divide-gray-100">
-              {people.map((person) => (
-                <li
-                  key={person.email}
-                  className="flex justify-between gap-x-6 py-5"
-                >
+          <div
+            id="appointments"
+            className="grid mx-auto gap-x-8 gap-y-16 border-t border-gray-200 pt-10 "
+          >
+            <ul
+              role="list"
+              className="grid w-full md:grid-cols-3 max-sm:grid-cols-1 sm:pt-8 md:mx-0 md:max-w-none *:justify-center"
+            >
+              {appointments.map((appointment, index) => (
+                <li key={index} className="flex justify-between gap-x-6 py-5">
                   <div className="flex min-w-0 gap-x-4">
-                    <img
-                      className="h-12 w-12 flex-none rounded-full bg-gray-50"
-                      src={person.imageUrl}
-                      alt=""
-                    />
-                    <div className="min-w-0 flex-auto">
+                    <div
+                      id={`appointment-${appointment.id}`}
+                      className="min-w-0 flex-auto border p-4 w-full"
+                    >
                       <p className="text-sm font-semibold leading-6 text-gray-900">
-                        {person.name}
+                        Date: {appointment.date}
                       </p>
-                      <p className="mt-1 truncate text-xs leading-5 text-gray-500">
-                        {person.email}
+                      <p className="mt-1 truncate text-md leading-5 text-gray-500">
+                        Email: {appointment.email}
+                      </p>
+                      <p className="mt-1 truncate text-md leading-5 text-gray-500">
+                        Name: {appointment.fname} {appointment.lname}
+                      </p>
+                      <p className="mt-1 truncate text-md leading-5 text-gray-500">
+                        Doctor: {appointment.person}
+                      </p>
+                      <p className="mt-1 truncate text-md leading-5 text-gray-500">
+                        Phone Number: {appointment.phoneNumber}
+                      </p>
+                      <p className="mt-1 truncate text-md leading-5 text-gray-500">
+                        Time: {appointment.time}
+                      </p>
+                      <p className="mt-2">
+                        <button
+                          onClick={() => handleDownloadPDF(appointment)}
+                          className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-2 rounded"
+                        >
+                          <MdOutlineFileDownload size={20} />
+                        </button>
                       </p>
                     </div>
-                  </div>
-                  <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-                    <p className="text-sm leading-6 text-gray-900">
-                      {person.role}
-                    </p>
-                    {person.lastSeen ? (
-                      <p className="mt-1 text-xs leading-5 text-gray-500">
-                        Last seen{" "}
-                        <time dateTime={person.lastSeenDateTime}>
-                          {person.lastSeen}
-                        </time>
-                      </p>
-                    ) : (
-                      <div className="mt-1 flex items-center gap-x-1.5">
-                        <div className="flex-none rounded-full bg-emerald-500/20 p-1">
-                          <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        </div>
-                        <p className="text-xs leading-5 text-gray-500">
-                          Online
-                        </p>
-                      </div>
-                    )}
                   </div>
                 </li>
               ))}

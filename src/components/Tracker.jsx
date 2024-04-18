@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import html2pdf from "html2pdf.js";
 
 function Tracker() {
   const [formData, setFormData] = useState({
@@ -10,6 +11,8 @@ function Tracker() {
   });
 
   const [calendarData, setCalendarData] = useState([]);
+
+  const calendarContainerRef = useRef(null);
 
   const handleTrack = (e) => {
     e.preventDefault();
@@ -50,6 +53,20 @@ function Tracker() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const downloadPDF = () => {
+    const calendarElement = calendarContainerRef.current;
+
+    html2pdf()
+      .from(calendarElement)
+      .set({
+        margin: 1,
+        filename: "menstrual_cycle_calendar.pdf",
+        orientation: "landscape",
+        width: 1200, // Adjust the width to accommodate three months
+      })
+      .save();
   };
 
   return (
@@ -137,8 +154,19 @@ function Tracker() {
               </div>
             </div>
           </form>
+          {/* Download PDF button */}
+          {calendarData.length > 0 && (
+            <div className="text-center my-8">
+              <button
+                className="bg-indigo-600 text-white px-4 py-2 rounded-md shadow hover:bg-indigo-700"
+                onClick={downloadPDF}
+              >
+                Download Calendar as PDF
+              </button>
+            </div>
+          )}
           {/* Render menstrual cycle calendar */}
-          <div className="mt-6">
+          <div className="mt-6" ref={calendarContainerRef}>
             <h3 className=" text-center mt-4 text-2xl font-bold leading-6 text-gray-900">
               Menstrual Cycle Calendar
             </h3>
@@ -146,51 +174,61 @@ function Tracker() {
               Menstruation estimation for the next 3 months
             </p>
             {/* Render the calendar */}
-            <div className="calendar-block">
-              <Calendar
-                className="w-full"
-                showNeighboringMonth={false}
-                showFixedNumberOfWeeks={true}
-                tileClassName={({ date }) =>
-                  calendarData.some(
-                    (cycle) => date >= cycle.start && date <= cycle.end
-                  )
-                    ? "menstruation-day"
-                    : null
-                }
-                tileContent={({ date }) => {
-                  if (
+            <div className="calendar-container">
+              <div className="calendar-month">
+                <Calendar
+                  className="w-full"
+                  showNeighboringMonth={false}
+                  showFixedNumberOfWeeks={true}
+                  tileClassName={({ date }) =>
                     calendarData.some(
                       (cycle) => date >= cycle.start && date <= cycle.end
                     )
-                  ) {
-                    return <div className="menstruation-dot">🔴</div>;
+                      ? "menstruation-day"
+                      : null
                   }
-                }}
-                minDetail="month"
-                maxDetail="month"
-                minDate={new Date()}
-                maxDate={
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth() + 2,
-                    1
-                  )
-                }
-                defaultActiveStartDate={
-                  formData.lastPeriodStart instanceof Date &&
-                  !isNaN(formData.lastPeriodStart)
-                    ? formData.lastPeriodStart
-                    : new Date()
-                }
-                onChange={(date) =>
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    lastPeriodStart: date,
-                  }))
-                }
-                showNavigation={true}
-              />
+                  tileContent={({ date }) => {
+                    if (
+                      calendarData.some(
+                        (cycle) => date >= cycle.start && date <= cycle.end
+                      )
+                    ) {
+                      return <div className="menstruation-dot">🔴</div>;
+                    }
+                  }}
+                  minDetail="month"
+                  maxDetail="month"
+                  minDate={new Date()}
+                  maxDate={
+                    new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth() + 2,
+                      1
+                    )
+                  }
+                  defaultActiveStartDate={
+                    formData.lastPeriodStart instanceof Date &&
+                    !isNaN(formData.lastPeriodStart)
+                      ? formData.lastPeriodStart
+                      : new Date()
+                  }
+                  onChange={(date) =>
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      lastPeriodStart: date,
+                    }))
+                  }
+                  showNavigation={true}
+                />
+              </div>
+              <div className="calendar-month">
+                {/* Render another Calendar component for the next month */}
+                {/* Similar settings as above */}
+              </div>
+              <div className="calendar-month">
+                {/* Render another Calendar component for the next month */}
+                {/* Similar settings as above */}
+              </div>
             </div>
           </div>
         </div>
