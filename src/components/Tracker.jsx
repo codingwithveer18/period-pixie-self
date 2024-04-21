@@ -44,7 +44,7 @@ function Tracker() {
         end: cycleEndDate,
       });
 
-      currentDate.setDate(currentDate.getDate() + cycleLength);
+      currentDate.setDate(currentDate.getDate() + cycleLength + flowDuration);
     }
 
     return cycleDates;
@@ -64,7 +64,7 @@ function Tracker() {
         margin: 1,
         filename: "menstrual_cycle_calendar.pdf",
         orientation: "landscape",
-        width: 1200, // Adjust the width to accommodate three months
+        width: 2400, // Adjust the width to accommodate three months
       })
       .save();
   };
@@ -173,61 +173,40 @@ function Tracker() {
             <p className="text-center my-4 text-lg italic font-medium leading-6 text-gray-900">
               Menstruation estimation for the next 3 months
             </p>
-            {/* Render the calendar */}
+            {/* Custom calendar layout */}
             <div className="calendar-container">
-              <div className="calendar-month">
-                <Calendar
-                  className="w-full"
-                  showNeighboringMonth={false}
-                  showFixedNumberOfWeeks={true}
-                  tileClassName={({ date }) =>
-                    calendarData.some(
-                      (cycle) => date >= cycle.start && date <= cycle.end
-                    )
-                      ? "menstruation-day"
-                      : null
-                  }
-                  tileContent={({ date }) => {
-                    if (
-                      calendarData.some(
-                        (cycle) => date >= cycle.start && date <= cycle.end
-                      )
-                    ) {
-                      return <div className="menstruation-dot">🔴</div>;
-                    }
-                  }}
-                  minDetail="month"
-                  maxDetail="month"
-                  minDate={new Date()}
-                  maxDate={
-                    new Date(
-                      new Date().getFullYear(),
-                      new Date().getMonth() + 2,
-                      1
-                    )
-                  }
-                  defaultActiveStartDate={
-                    formData.lastPeriodStart instanceof Date &&
-                    !isNaN(formData.lastPeriodStart)
-                      ? formData.lastPeriodStart
-                      : new Date()
-                  }
-                  onChange={(date) =>
-                    setFormData((prevState) => ({
-                      ...prevState,
-                      lastPeriodStart: date,
-                    }))
-                  }
-                  showNavigation={true}
-                />
-              </div>
-              <div className="calendar-month">
-                {/* Render another Calendar component for the next month */}
-                {/* Similar settings as above */}
-              </div>
-              <div className="calendar-month">
-                {/* Render another Calendar component for the next month */}
-                {/* Similar settings as above */}
+              <div className="calendar-row">
+                {calendarData.map((cycle, index) => (
+                  <div key={index} className="calendar-month">
+                    <Calendar
+                      className="w-full"
+                      showNeighboringMonth={false}
+                      showFixedNumberOfWeeks={true}
+                      tileClassName={({ date }) =>
+                        date >= cycle.start && date <= cycle.end
+                          ? "menstruation-day"
+                          : null
+                      }
+                      tileContent={({ date }) => {
+                        if (date >= cycle.start && date <= cycle.end) {
+                          return <div className="menstruation-dot">🔴</div>;
+                        }
+                      }}
+                      minDetail="month"
+                      maxDetail="month"
+                      minDate={cycle.start}
+                      maxDate={cycle.end}
+                      defaultActiveStartDate={cycle.start}
+                      onChange={(date) =>
+                        setFormData((prevState) => ({
+                          ...prevState,
+                          lastPeriodStart: date,
+                        }))
+                      }
+                      showNavigation={true}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
