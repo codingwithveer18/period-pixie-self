@@ -1,27 +1,26 @@
 import { getAuth } from "firebase/auth";
 import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider } from "firebase/auth";
 import { getDatabase, ref } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: process.env.FIREBASE_API_KEY,
   authDomain: "pixie-self.firebaseapp.com",
   projectId: "pixie-self",
   storageBucket: "pixie-self.appspot.com",
   messagingSenderId: "480576781179",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENTID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENTID,
 };
-const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth(firebaseApp);
-const google = new GoogleAuthProvider(firebaseApp);
-const database = getDatabase();
-const contactformDB = ref(database, "contact");
-const appointformDB = ref(database, "appointment");
-const firestore = getFirestore(firebaseApp);
-const storage = getStorage(firebaseApp);
-// Initialize Firebase Cloud Messaging and get a reference to the service
 
-export { auth, google, contactformDB, firestore, storage, appointformDB };
+// Initialize Firebase app
+const firebaseApp = initializeApp(firebaseConfig);
+
+// Initialize Firebase services
+const auth = getAuth(firebaseApp);
+const database = getDatabase();
+const firestore = getFirestore();
+const storage = getStorage();
+
+export { firebaseApp, auth, database, firestore, storage };
