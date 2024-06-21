@@ -13,14 +13,14 @@ const firebaseConfig = {
   appId: process.env.FIREBASE_APP_ID,
   measurementId: process.env.FIREBASE_MEASUREMENTID,
 };
-
-// Initialize Firebase app
 const firebaseApp = initializeApp(firebaseConfig);
-
-// Initialize Firebase services
 const auth = getAuth(firebaseApp);
+const google = new GoogleAuthProvider(firebaseApp);
 const database = getDatabase();
-const firestore = getFirestore();
-const storage = getStorage();
+const contactformDB = ref(database, "contact");
+const appointformDB = ref(database, "appointment");
+const firestore = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
+// Initialize Firebase Cloud Messaging and get a reference to the service
 
-export { firebaseApp, auth, database, firestore, storage };
+export { auth, google, contactformDB, firestore, storage, appointformDB };
