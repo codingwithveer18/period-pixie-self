@@ -6,13 +6,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "import.meta.env.FIREBASE_API_KEY",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "pixie-self.firebaseapp.com",
   projectId: "pixie-self",
   storageBucket: "pixie-self.appspot.com",
   messagingSenderId: "480576781179",
-  appId: "import.meta.env.FIREBASE_APP_ID",
-  measurementId: "import.meta.env.FIREBASE_MEASUREMENTID",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENTID,
 };
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
